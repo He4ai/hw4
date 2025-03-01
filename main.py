@@ -24,18 +24,16 @@ def insert_from_json(file_name):
     session.commit()
 
 
-def found_sales(name=None, id=None):
-    if name is not None:
-        que = (session.query(Book.title, Shop.name, Sale.price, Sale.date_sale).join(Sale.stock).
-                join(Stock.book).join(Stock.shop).
-                join(Book.publisher).
-                filter(Publisher.name == name).all())
-    elif id is not None:
-        que = (session.query(Book.title, Shop.name, Sale.price, Sale.date_sale).join(Sale.stock).
-                join(Stock.book).join(Stock.shop).
-                join(Book.publisher).
-                filter(Publisher.id == id).all())
+def found_sales(param):
+    que = (session.query(Book.title, Shop.name, Sale.price, Sale.date_sale).join(Sale.stock).
+            join(Stock.book).join(Stock.shop).
+            join(Book.publisher))
+
+    if param.isdigit():
+        que = que.filter(Publisher.id == param).all()
     else:
+        que = que.filter(Publisher.name == param).all()
+    if not param:
         print('Не введены требуемые данные!')
         return
     if que:
@@ -58,6 +56,4 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
     insert_from_json('tests_data.json')
-    found_sales(name='No starch press')
-    found_sales(name='Pearson')
-    found_sales(name='P')
+    found_sales(input('Введите имя или id автора: '))1
